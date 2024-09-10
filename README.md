@@ -31,13 +31,13 @@ _free(str); // don't forget to free, if you don't and debug mode is on, the prog
 exit_safer_pointers(); // free the whole list, this is necessary to avoid any memory leaks
 
 initialize_safer_pointers(); //this is necessary here but in practice, you should only use this function once
-void* forgotten = _malloc(sizeof(int), "forgotten allocation");
+void* forgotten = _malloc(sizeof(int), "forgotten allocation oops");
 exit_safer_pointers();  // this is necessary to get the error message, it should also be used only once
 ```
 has the following output with DEBUG_MODE = 1
 ```
-[SUCCESS] POINTERS : All pointers where freed
-[FAILURE] POINTERS : Unfreed pointer : forgotten allocation
+[SUCCESS] POINTERS : All pointers where freed       // this is due to the two call to initialize_safer_pointers() wich you should only use once
+[FAILURE] POINTERS : Unfreed pointer : forgotten allocation oops
 ```
 and no memory leaks because we used `exit_safer_pointers()` wich will free every unfreed pointer
 ```
