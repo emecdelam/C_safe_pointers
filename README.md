@@ -94,6 +94,3 @@ int safe_free(p* pointer)
 frees a node and the pointer it pointed to, also removes it from the list of pointers.
 if the pointer is not valid, it returns `POINTER_INVALID_INPUT` else `POINTER_SUCCESS`, it can also return `POINTER_NOT_FOUND` if the user manually removed the pointer already
 
-## Testing
-
-When using valgrind, no leaks were detected with a semi complex test, you can also run the tests using the Makefile, `make test` to test the program for allcoating and freeing memory and `make leak` to test for unfreed memory with valgrind
