@@ -9,7 +9,7 @@
 #define POINTER_SUCCESS 0
 #define POINTER_INVALID_INPUT -1
 
-
+#define SAFE_CAST(pointer, type) ((type*)((pointer)->p))
 
 //==================
 // Set to 0 to have no warning messages on malloc fails
@@ -43,6 +43,7 @@ int initialize_safer_pointers();
 void exit_safer_pointers();
 p* safe_malloc(size_t size, char* name);
 int safe_free(p* pointer);
+void display_safe_pointers();
 #endif
 
 

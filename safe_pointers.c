@@ -32,7 +32,7 @@ void exit_safer_pointers(){
         return;
     }
     while (POINTER_LIST->size > 0){
-        fprintf(POINTER_INFO_STD, "[FAILURE] POINTERS : unfreed pointer : %s\n", POINTER_LIST->head->name);
+        fprintf(POINTER_INFO_STD, "[FAILURE] POINTERS : Unfreed pointer : %s\n", POINTER_LIST->head->name);
         safe_free(POINTER_LIST->head);
     }
     free(POINTER_LIST);
@@ -40,6 +40,7 @@ void exit_safer_pointers(){
 
 }
 p* safe_malloc(size_t size, char* name){
+
     void* pointer = malloc(size);
     if (pointer == NULL){
         log_error("malloc failed for a safe malloc");
@@ -102,11 +103,12 @@ int pop_node(p* node) {
     
     return POINTER_SUCCESS;
 }
-void display() {
+void display_safe_pointers() {
     p* temp = POINTER_LIST->head;
-    while (temp != NULL) {
-        printf("%s -> ", temp->name);
+    fprintf(POINTER_INFO_STD,"[");
+    while (temp->next != NULL) {
+        fprintf(POINTER_INFO_STD,"\"%s\", ", temp->name);
         temp = temp->next;
     }
-    printf("NULL\n");
+    fprintf(POINTER_INFO_STD,"\"%s\"]\n", temp->name);
 }
