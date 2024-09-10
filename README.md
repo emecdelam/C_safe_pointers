@@ -39,7 +39,7 @@ has the following output with DEBUG_MODE = 1
 [SUCCESS] POINTERS : All pointers where freed
 [FAILURE] POINTERS : Unfreed pointer : forgotten allocation
 ```
-and no memory leaks
+and no memory leaks because we used `exit_safer_pointers()` wich will free every unfreed pointer
 ```
 ==568414== HEAP SUMMARY:
 ==568414==     in use at exit: 0 bytes in 0 blocks
@@ -57,6 +57,10 @@ with debug mode = 0, there are no output but the program leaks, (intentionnaly s
 ==568747==         suppressed: 0 bytes in 0 blocks
 ```
 this sort of error could have been preventend using the warnings of DEBUG_MODE
+## Inclusion
+
+to add it into your project, the main c files are `safe_pointers.c` and `safe_pointers.h`
+
 
 ## Usage
 If you plan on using the debug mode and having a fast application without allocations in a list in the background, you can use `_malloc()` and `_free()` with `SAFE_CAST`
