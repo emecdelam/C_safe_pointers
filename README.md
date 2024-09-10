@@ -5,7 +5,7 @@
 
 How does it make it safer?
 
-The main goal is not avoid having forgotten non freed pointers that were allocated, it helps that by storing every pointer in a list and at the end of a program freeing everypointer in that list.
+The main goal is not avoid having forgotten non freed pointers that were allocated, it helps that by storing every pointer in a list and at the end of a program freeing every pointer in that list.
 
 
 An example of output for two lists, one with all freed pointers and the other with two unfreed pointers
