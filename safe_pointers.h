@@ -36,14 +36,12 @@ typedef struct pointer_list{
 } p_list;
 
 p_list* POINTER_LIST = NULL;
-p* create_node(void* pointer, char* name);
-void append_node(p* new_node);
-int pop_node(p* node);
+
+
 int initialize_safer_pointers();
 void exit_safer_pointers();
 p* safe_malloc(size_t size, char* name);
 int safe_free(p* pointer);
-void display_safe_pointers();
 #endif
 
 

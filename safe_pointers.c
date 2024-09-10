@@ -55,7 +55,7 @@ p* safe_malloc(size_t size, char* name){
 }
 
 int safe_free(p* pointer){
-    if (pointer == NULL){
+    if (pointer == NULL || pointer == POINTER_MALLOC_FAIL){
         return POINTER_INVALID_INPUT;
     }
     free(pointer->p);
