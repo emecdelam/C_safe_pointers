@@ -8,22 +8,63 @@ How does it make it safer?
 The main goal is not avoid having forgotten non freed pointers that were allocated, it helps that by storing every pointer in a list and at the end of a program freeing every pointer in that list.
 
 
-An example of output for two lists, one with all freed pointers and the other with two unfreed pointers
+
+A complete exmaple of usage
+
+```c
+// The following works with DEBUG_MODE = 0 or 1, when 0, the program is faster and doesn't use a list to check for forgotten allocations
+
+initialize_safer_pointers(); // /!\ needed, else the program will segfault due to head being null   
+
+void* str = _malloc(sizeof(char) * 8, "string example"); // simple allocation for a string
+
+char* str_casted = SAFE_CAST(str, char);  // /!\ using SAFE_CAST is necessary when using debug mode as it takes care of the cast to the node struct necessary or not
+str_casted[0] = 'T';
+str_casted[1] = 'E';
+str_casted[2] = 'S';
+str_casted[3] = 'T';
+str_casted[4] = '\0';
+
+_free(str); // don't forget to free, if you don't and debug mode is on, the program will tell you that you forgot to free it
+
+
+exit_safer_pointers(); // free the whole list, this is necessary to avoid any memory leaks
+
+initialize_safer_pointers(); //this is necessary here but in practice, you should only use this function once
+void* forgotten = _malloc(sizeof(int), "forgotten allocation");
+exit_safer_pointers();  // this is necessary to get the error message, it should also be used only once
+```
+has the following output with DEBUG_MODE = 1
 ```
 [SUCCESS] POINTERS : All pointers where freed
-[FAILURE] POINTERS : Unfreed pointer : pointer never freed
-[FAILURE] POINTERS : Unfreed pointer : pointer2 never freed
+[FAILURE] POINTERS : Unfreed pointer : forgotten allocation
 ```
+and no memory leaks
+```
+==568414== HEAP SUMMARY:
+==568414==     in use at exit: 0 bytes in 0 blocks
+==568414==   total heap usage: 7 allocs, 7 frees, 1,116 bytes allocated
+==568414==
+==568414== All heap blocks were freed -- no leaks are possible
+```
+with debug mode = 0, there are no output but the program leaks, (intentionnaly since we have a forgotten allocation)
+```
+==568747== LEAK SUMMARY:
+==568747==    definitely lost: 4 bytes in 1 blocks
+==568747==    indirectly lost: 0 bytes in 0 blocks
+==568747==      possibly lost: 0 bytes in 0 blocks
+==568747==    still reachable: 0 bytes in 0 blocks
+==568747==         suppressed: 0 bytes in 0 blocks
+```
+this sort of error could have been preventend using the warnings of DEBUG_MODE
 
 ## Usage
-
-When allocating memory you can use `safe_malloc()` wich allocates memory for the struct you want while also adding the allocation in the list
+If you plan on using the debug mode and having a fast application without allocations in a list in the background, you can use `_malloc()` and `_free()` with `SAFE_CAST`
 
 When starting a program, you need to call `initialize_safer_pointers()` wich initializes the list correctly in the global variable `p_list* POINTER_LIST`
 
 On exiting a program safely, you need to call `exit_safer_pointers()` wich will print all unfreed pointers and free them for you
 
-When freeing memory, you can call `safe_free()` wich will remove the allocation from the list of allocations and free the node
 
 For a working example, check the [test](test_safe_pointers.c)
 
@@ -39,11 +80,24 @@ You can choose to log errors such as malloc fails with the `LOG_ERRORS` definiti
 
 ### casting
 
-when allocating a struct, you will have to use typecast to allow for autocompletion, the macro `SAFE_CAST` is there to help
+when allocating a struct, you will have to use typecast to allow for autocompletion, the macro `SAFE_CAST` is there to help, it takes care of the issue of uses of debug mode returning either a node with the allocation or directly the allocation
+
+### debug
+
+you can ignore the complete linkedlist part by using `_malloc` and `_free` wich depending of the value of `DEBUG_MODE` (assigned in the header file), this is done to avoid having to use a linked list in production code
 
 
 ## Doc
 
+```c
+void* _malloc(size_t size, char* name)
+```
+a replacement for malloc, using `safe_malloc` if `DEBUG_MODE` == 1, else redirects to the standard malloc except in case of standard malloc error where it changes the error from `NULL` to `POINTER_MALLOC_FAIL`
+
+```c
+void _free(void* pointer);
+```
+a replacement for free, using standard free is `DEBUG_MODE` == 0 else using `safe_free`
 
 ```c
 int initialize_safer_pointers()
@@ -94,3 +148,11 @@ int safe_free(p* pointer)
 frees a node and the pointer it pointed to, also removes it from the list of pointers.
 if the pointer is not valid, it returns `POINTER_INVALID_INPUT` else `POINTER_SUCCESS`, it can also return `POINTER_NOT_FOUND` if the user manually removed the pointer already
 
+## Optimization
+
+When going to production, using a linkedlist to store all pointers is not the most efficient solution, if during testing your code correctly frees all pointers, you can use some simplifications that's why there is a `DEBUG_MODE` definition, when set to 0 and when using `_malloc` and `_free` a check is performed before redirecting to the traditional `free` call or the `safe_free` (same goes for malloc with an added check to return `POINTER_MALLOC_FAIL` instead of null)
+```c
+char* str = _malloc(sizeof(char)*8, "string example");
+_free(str);
+```
+this code will not add any pointers to the linkedlist if `DEBUG_MODE` == 0
