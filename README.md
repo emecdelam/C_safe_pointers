@@ -72,8 +72,6 @@ On exiting a program safely, you need to call `exit_safer_pointers()` wich will 
 
 For a working example, check the [test](test_safe_pointers.c)
 
-
-
 ## Utils
 
 For using these helper functions, there are some parameters and utilies

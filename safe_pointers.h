@@ -16,7 +16,7 @@
 // Set to 0 to have no warning messages on malloc fails
 #define LOG_ERRORS 1
 //==================
-// Set this variable to whatever std you want to use
+// Set this variable to whatever std you want to use by default stdout
 #define POINTER_INFO_STD stdout
 //==================
 
@@ -52,13 +52,7 @@ void exit_safer_pointers();
 p* safe_malloc(size_t size, char* name);
 int safe_free(p* pointer);
 
-
-
 void* _malloc(size_t size, char* name);
 void _free(void* pointer);
 
 #endif
-
-
-
-
