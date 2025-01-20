@@ -33,10 +33,6 @@ void log_error(char* str){
     }
 }
 
-
-
-
-
 typedef struct node{
     void* p;
     char* name;
